@@ -1,17 +1,26 @@
 {
-  "name": "manage_care",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "mongoose": "^5.0.4",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
-  }
+    "name": "manage_care",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "body-parser": "^1.18.2",
+        "chai": "^4.1.2",
+        "express": "^4.16.2",
+        "heroku": "^0.2.0",
+        "mocha": "^5.0.0",
+        "mongo": "^0.1.0",
+        "mongoose": "^5.0.4",
+        "morgan": "^1.9.0",
+        "path": "^0.12.7",
+        "react": "^16.2.0",
+        "react-dom": "^16.2.0",
+        "react-scripts": "1.1.1",
+        "travis": "^0.1.1"
+    },
+    "scripts": {
+        "start": "node server.js",
+        "build": "react-scripts build",
+        "test": "mocha --exit",
+        "eject": "react-scripts eject"
+    }
 }
