@@ -1,25 +1,33 @@
 'use strict';
 
 const express = require('express');
+
 const patientRouter = express.Router();
-const { Patients } = require('../models/patient-model');
+const { patients } = require('../models/patient-model');
+const bodyParser = require('body-parser');
+
+patientRouter.use(bodyParser.json());
+
 
 
 /* ========== GET/READ ALL ITEMS ========== */
 patientRouter.get('/patient', (req, res) => {
 	console.log('enter GET end point');
-	Patients.get()
-		.then(patient => res.status(200).json(patient.serialize()))
+	patients.get()
+		.then(response => {
+			res.json(response.map(item => item.serialize()));
+		})
 		.catch(err => {
-			res.status(500).json({ error: 'Something went wrong: GET Patients' });
+			console.log(err);
+			res.status(500).json({ message: 'Something went wrong' });
 		});
 });
 
 /* ========== GET/READ SINGLE ITEMS ========== */
 patientRouter.get('/patient/:id', (req, res) => {
 	console.log('enter GET/id end point');
-	Patients.get(req.params.id)
-		.then(patient => res.status(201).json(patient.serialize()))
+	patients.get(req.params.id)
+		.then(response => res.status(201).json(response.serialize()))
 		.catch(err => {
 			res.status(500).json({ message: 'Somthing went wrong: GET Patient by ID' });
 		});
@@ -28,25 +36,40 @@ patientRouter.get('/patient/:id', (req, res) => {
 /* ========== POST/CREATE ITEM ========== */
 patientRouter.post('/patient', (req, res) => {
 	console.log('enter post end point');
+	const requiredFields = ['name', 'medication', 'pharmacy', 'physician', ];
+
+	for (let i = 0; i < requiredFields.length; i++) {
+		const field = requiredFields[i];
+		console.log(field);
+		if (!(field in req.body)) {
+			const message = `Missing \`${field}\` in request body`;
+			console.error(message);
+			return res.status(400).send(message);
+		}
+	}
+
+	console.log(req.body.name.firstname);
 	const patientName = {
 		firstname: req.body.name.firstname,
 		lastname: req.body.name.lastname
 	};
-	const name = req.body.medication.name;
-	const dosage = req.body.medication.dosage;
-	const schedule = req.body.medication.schedule;
+	const medication = {
+		name: req.body.medication.name,
+		dosage: req.body.medication.dosage,
+		schedule: req.body.medication.schedule
+	};
 	const pharmacy = {
-		name: req.body.medication.pharmacy.name,
-		address: req.body.medication.pharmacy.address,
-		phoneNumber: req.body.mediction.pharmacy.phoneNumber
+		name: req.body.pharmacy.name,
+		address: req.body.pharmacy.address,
+		phoneNumber: req.body.pharmacy.phoneNumber
 	};
 	const physician = {
-		name: req.body.medication.pharmacy.name,
-		address: req.body.medication.physician.address,
-		phoneNumber: req.body.medication.pharmacy.phoneNumber
+		name: req.body.physician.name,
+		address: req.body.physician.address,
+		phoneNumber: req.body.physician.phoneNumber
 	};
-	Patients.create(patientName, name, dosage, schedule, pharmacy, physician)
-		.then(patient => res.status(201).json(patient.serialize()))
+	patients.create(patientName, medication, pharmacy, physician)
+		.then(response => res.status(201).json(response.serialize()))
 		.catch(err => {
 			res.status(500).json({ message: "Internal server error'});" });
 		});
@@ -55,24 +78,42 @@ patientRouter.post('/patient', (req, res) => {
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 patientRouter.put('/patient/:id', (req, res) => {
 	console.log('enter put end point');
+	const requiredFields = ['name', 'medication', 'pharmacy', 'physician', ];
+
+	for (let i = 0; i < requiredFields.length; i++) {
+		const field = requiredFields[i];
+		console.log(field);
+		if (!(field in req.body)) {
+			const message = `Missing \`${field}\` in request body`;
+			console.error(message);
+			return res.status(400).send(message);
+		}
+	}
 	const id = req.params.id;
-	const name = req.body.medication.name;
-	const dosage = req.body.medication.dosage;
-	const schedule = req.body.medication.schedule;
+	const patientName = {
+		firstname: req.body.name.firstname,
+		lastname: req.body.name.lastname
+	};
+	const medication = {
+		name: req.body.medication.name,
+		dosage: req.body.medication.dosage,
+		schedule: req.body.medication.schedule
+	};
 	const pharmacy = {
 		name: req.body.pharmacy.name,
 		address: req.body.pharmacy.address,
 		phoneNumber: req.body.pharmacy.phoneNumber
 	};
 	const physician = {
-		name: req.body.pharmacy.name,
+		name: req.body.physician.name,
 		address: req.body.physician.address,
-		phoneNumber: req.body.pharmacy.phoneNumber
+		phoneNumber: req.body.physician.phoneNumber
 	};
 
-	Patients.update(id, name, dosage, schedule, pharmacy, physician)
-		.then(res => res.status(204).end())
+	patients.update(id, patientName, medication, pharmacy, physician)
+		.then(response => res.status(204).json(response))
 		.catch(err => {
+			console.log(err);
 			res.status(500).json({ message: 'Something went wrong: Update Patient' });
 		});
 });
@@ -80,8 +121,8 @@ patientRouter.put('/patient/:id', (req, res) => {
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 patientRouter.delete('/patient/:id', (req, res) => {
 	console.log('enter delete end point');
-	Patients.delete(req.params.id)
-		.then(res => res.status(204).end())
+	patients.delete(req.params.id)
+		.then(response => res.status(204).json(response))
 		.catch(err => {
 			res.status(500).json({ message: 'Something went wrong: Delete Patient' });
 		});

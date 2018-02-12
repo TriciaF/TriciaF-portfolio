@@ -11,22 +11,25 @@ const medicineSchema = mongoose.Schema({
 
 //schema definition for the pateint database
 const patientSchema = mongoose.Schema({
-	name: { firstname: String, lastName: String, default: '' },
-	medication: [{
+	name: {
+		firstname: String,
+		lastname: String
+	},
+	medication: {
 		name: String,
 		dosage: String,
-		schedule: String,
-		pharmacy: {
-			name: String,
-			address: String,
-			phoneNumber: String
-		},
-		physician: {
-			name: String,
-			address: String,
-			phoneNumber: String
-		},
-	}],
+		schedule: String
+	},
+	pharmacy: {
+		name: String,
+		address: String,
+		phoneNumber: String
+	},
+	physician: {
+		name: String,
+		address: String,
+		phoneNumber: String
+	},
 });
 
 //schema definition for user login
@@ -46,23 +49,31 @@ const UserSchema = mongoose.Schema({
 //defined virtual for patient name
 patientSchema.virtual('patientName').get(function() {
 	return `${this.name.firstname} 
-					${this.name.lastName}`.trim();
+					${this.name.lastname}`.trim();
 
+});
+
+// // //defined virtual for medication
+patientSchema.virtual('medicationInfo').get(function() {
+	return `${this.medication.name}
+          ${this.medication.dosage}
+          ${this.medication.schedule}`.trim();
 });
 
 //defined virtual for pharmacy
-patientSchema.virtual('pharmacy').get(function() {
-	return `${this.medication.pharmacy.name} 
-					${this.medication.pharmacy.address}
-					${this.medication.pharmacy.phoneNumber}`.trim();
+patientSchema.virtual('pharmacyInfo').get(function() {
+	return `${this.pharmacy.name} 
+					${this.pharmacy.address}
+					${this.pharmacy.phoneNumber}`.trim();
 });
 
-//defined virtual for physician
-patientSchema.virtual('physician').get(function() {
-	return `${this.medication.physician.name}
-					${this.medication.physician.address}
-					${this.medication.physician.phoneNumber}`.trim();
+// //defined virtual for physician
+patientSchema.virtual('physicianInfo').get(function() {
+	return `${this.physician.name}
+					${this.physician.address}
+					${this.physician.phoneNumber}`.trim();
 });
+
 
 //serialize method for medicine schema
 medicineSchema.methods.serialize = function() {
@@ -76,12 +87,10 @@ medicineSchema.methods.serialize = function() {
 patientSchema.methods.serialize = function() {
 	return {
 		id: this._id,
-		name: this.name,
-		medicationName: this.medication.name,
-		Dosage: this.medication.dosage,
-		Schedule: this.medication.schedule,
-		Pharmacy: this.pharmacy,
-		Physician: this.physician
+		name: this.patientName,
+		medication: this.medicationInfo,
+		pharmacy: this.pharmacyInfo,
+		physician: this.physicianInfo
 	};
 };
 
@@ -97,7 +106,7 @@ UserSchema.methods.hashPassword = function(password) {
 
 //declare and export models
 const Medicines = mongoose.model('Medicines', medicineSchema);
-const Patients = mongoose.model('Patients', patientSchema);
+const Patients = mongoose.model('Patients', patientSchema, 'patientDb');
 const Users = mongoose.model('Users', UserSchema);
 
 module.exports = { Medicines, Patients, Users };

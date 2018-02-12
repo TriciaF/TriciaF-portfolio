@@ -1,26 +1,29 @@
 'use strict';
 
-const Patients = {
-	create: function(patientName, name, dosage, schedule, pharmacy, physician) {
+const mongoose = require('mongoose');
+const { Patients } = require('./schema');
+
+const patients = {
+	create: function(patientName, medication, pharmacy, physician) {
 		console.log('Enter Patients:create');
 		return Patients
 			.create({
 				name: { firstname: patientName.firstname, lastname: patientName.lastname },
-				medication: [{
-					name: name,
-					dosage: dosage,
-					schedule: schedule,
-					pharmacy: {
-						name: pharmacy.name,
-						address: pharmacy.address,
-						phoneNumber: pharmacy.phoneNumber
-					},
-					physician: {
-						name: physician.name,
-						address: physician.address,
-						phoneNumber: physician.phoneNumber
-					}
-				}],
+				medication: {
+					name: medication.name,
+					dosage: medication.dosage,
+					schedule: medication.schedule
+				},
+				pharmacy: {
+					name: pharmacy.name,
+					address: pharmacy.address,
+					phoneNumber: pharmacy.phoneNumber
+				},
+				physician: {
+					name: physician.name,
+					address: physician.address,
+					phoneNumber: physician.phoneNumber
+				}
 			});
 	},
 
@@ -33,26 +36,28 @@ const Patients = {
 		}
 	},
 
-	update: function(id, patientName, name, dosage, schedule, pharmacy, physician) {
+	update: function(id, patientName, medication, pharmacy, physician) {
 		console.log('Enter Patients:Update');
+		console.log(id);
 		const updateObj = {
 			name: { firstname: patientName.firstname, lastname: patientName.lastname },
-			medication: [{
-				name: name,
-				dosage: dosage,
-				schedule: schedule,
-				pharmacy: {
-					name: pharmacy.name,
-					address: pharmacy.address,
-					phoneNumber: pharmacy.phoneNumber
-				},
-				physician: {
-					name: physician.name,
-					address: physician.address,
-					phoneNumber: physician.phoneNumber
-				},
-			}],
+			medication: {
+				name: medication.name,
+				dosage: medication.dosage,
+				schedule: medication.schedule
+			},
+			pharmacy: {
+				name: pharmacy.name,
+				address: pharmacy.address,
+				phoneNumber: pharmacy.phoneNumber
+			},
+			physician: {
+				name: physician.name,
+				address: physician.address,
+				phoneNumber: physician.phoneNumber
+			},
 		};
+		console.log(updateObj);
 		return Patients
 			.findByIdAndUpdate(id, { $set: updateObj });
 	},
@@ -64,4 +69,4 @@ const Patients = {
 	}
 };
 
-module.export = { Patients };
+module.exports = { patients };

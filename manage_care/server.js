@@ -16,7 +16,7 @@ app.use(morgan('common'));
 //Send static files to client
 app.use(express.static(path.join(__dirname, './client/public')));
 //re-Route requests to our router
-app.use('/patient', patientRouter);
+app.use('/', patientRouter);
 
 //server functions
 let server;
